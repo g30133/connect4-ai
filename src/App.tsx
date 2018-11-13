@@ -89,24 +89,26 @@ class App extends React.Component<any, AppState> {
   public componentDidUpdate() {
     console.log('componentDidUpdate')
     Util.dumpBoard(this.state.board, 6, 7)
-    if(this.state.winner == '' && this.state.xTurn == false) {
-      this.setState((prevState) => {
-        const newBoard = Array.from(prevState.board)
-        const aiColumn = Util.aiMove(newBoard, 'O')
-        
-        for(let rowIx = 0; rowIx < newBoard[aiColumn].length; rowIx++) {
-          if(newBoard[aiColumn][rowIx] === '') {
-            newBoard[aiColumn][rowIx] = 'O'
-            break
+    setTimeout(() => {
+      if(this.state.winner == '' && this.state.xTurn == false) {
+        this.setState((prevState) => {
+          const newBoard = Array.from(prevState.board)
+          const aiColumn = Util.aiMove(newBoard, 'O')
+          
+          for(let rowIx = 0; rowIx < newBoard[aiColumn].length; rowIx++) {
+            if(newBoard[aiColumn][rowIx] === '') {
+              newBoard[aiColumn][rowIx] = 'O'
+              break
+            }
           }
-        }
-
-        return {
-          board: newBoard,
-          xTurn: true,
-        }
-      })
-    }
+  
+          return {
+            board: newBoard,
+            xTurn: true,
+          }
+        })
+      }  
+    }, 100)
   }
 
   // private checkGameOver() {
