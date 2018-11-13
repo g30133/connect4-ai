@@ -1,0 +1,7 @@
+.column {
+    display: flex;
+    flex-direction: column-reverse;
+    width: var(--cell-size);
+    border: 2px solid black 
+  }
+  

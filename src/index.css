@@ -1,0 +1,15 @@
+:root {
+  --cell-size: 13vw;
+}
+
+@media (min-aspect-ratio: 1/1) {
+  :root {
+    --cell-size: 13vh;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
