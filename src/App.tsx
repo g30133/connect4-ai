@@ -45,7 +45,7 @@ class App extends React.Component<any, AppState> {
 
 
   private humanAddToColumn(colIx:number, mark:string) {
-    console.log('humanAddToColumn')
+    // console.log('humanAddToColumn')
     this.setState((prevState) => {
       //const newBoard = Array.from(prevState.board)
       const newBoard = Util.deepcopyBoard(prevState.board)
@@ -87,41 +87,49 @@ class App extends React.Component<any, AppState> {
   }
 
   public componentDidUpdate() {
-    console.log('componentDidUpdate')
+    // console.log('componentDidUpdate')
     Util.dumpBoard(this.state.board, 6, 7)
+
+
     setTimeout(() => {
-      if(this.state.winner == '' && this.state.xTurn == false) {
-        this.setState((prevState) => {
-          const newBoard = Array.from(prevState.board)
-          const aiColumn = Util.aiMove(newBoard, 'O')
-          
-          for(let rowIx = 0; rowIx < newBoard[aiColumn].length; rowIx++) {
-            if(newBoard[aiColumn][rowIx] === '') {
-              newBoard[aiColumn][rowIx] = 'O'
-              break
+      if(this.state.winner == '') {
+        this.checkGameOver()
+        if(this.state.xTurn == false) {
+          this.setState((prevState) => {
+            const newBoard = Array.from(prevState.board)
+            const aiColumn = Util.aiMove(newBoard, 'O')
+            
+            for(let rowIx = 0; rowIx < newBoard[aiColumn].length; rowIx++) {
+              if(newBoard[aiColumn][rowIx] === '') {
+                newBoard[aiColumn][rowIx] = 'O'
+                break
+              }
             }
-          }
-  
-          return {
-            board: newBoard,
-            xTurn: true,
-          }
-        })
+    
+            return {
+              board: newBoard,
+              xTurn: true,
+            }
+          })
+        }
       }  
     }, 100)
   }
 
-  // private checkGameOver() {
-  //   const winner = Util.checkForWinner(this.state.board)
-  //   this.setState(() => {
-  //     return {
-  //       winner: winner
-  //     }
-  //   })
-  // }
+  private checkGameOver() {
+    const winner = Util.checkForWinner(this.state.board)
+    // console.log('winner:' + winner)
+    if(winner != '') {
+      this.setState(() => {
+        return {
+          winner: winner
+        }
+      })
+    }
+  }
 
   public render() {
-    console.log('render()')
+    // console.log('render()')
     Util.dumpBoard(this.state.board, 6, 7)
     return (
       <div className="app">

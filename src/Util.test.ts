@@ -210,7 +210,7 @@ describe('util helper functions', () => {
         expect(columnIx3).toBe(2)
     })
 
-    it.only('testin alphabeta', () => {
+    it('testin alphabeta', () => {
         board[0] = ['', '', '', '', '', '']
         board[1] = ['', '', '', '', '', '']
         board[2] = ['', '', '', '', '', '']
@@ -218,8 +218,8 @@ describe('util helper functions', () => {
         board[4] = ['', '', '', '', '', '']
         board[5] = ['', '', '', '', '', '']
         board[6] = ['', '', '', '', '', '']
-        // const columnIx = Util.alphabetaSearch(board, 1, 'X')
-        // expect(columnIx).toBe(3)
+        const columnIx = Util.alphabetaSearch(board, 1, 'X')
+        expect(columnIx).toBe(3)
         const columnIx1 = Util.alphabetaSearch(board, 2, 'X')
         expect(columnIx1).toBe(1)
         // const columnIx2 = Util.alphabetaSearch(board, 3, 'X')
@@ -228,5 +228,44 @@ describe('util helper functions', () => {
         // expect(columnIx3).toBe(2)
         // const columnIx4 = Util.alphabetaSearch(board, 6, 'X')
         // expect(columnIx4).toBe(3)
+    })
+
+    it.only('testin alphabeta from real game', () => {
+        board[0] = ['O', 'X', 'O', 'X', 'X', 'O']
+        board[1] = ['X', 'O', 'O', 'X', 'O', 'X']
+        board[2] = ['X', 'O', 'X', 'O', 'O', 'X']
+        board[3] = ['X', 'O', 'X', 'O', 'O', 'O']
+        board[4] = ['O', 'X', 'O', 'O', 'X', 'X']
+        board[5] = ['X', 'X', 'O', 'X', '', '']
+        board[6] = ['X', '', '', '', '', '']
+        const columnIx = Util.alphabetaSearch(board, 8, 'O')
+        expect(columnIx).toBe(6)
+        //const columnIx1 = Util.alphabetaSearch(board, 2, 'X')
+        //expect(columnIx1).toBe(1)
+        // const columnIx2 = Util.alphabetaSearch(board, 3, 'X')
+        // expect(columnIx2).toBe(2)
+        // const columnIx3 = Util.alphabetaSearch(board, 4, 'X')
+        // expect(columnIx3).toBe(2)
+        // const columnIx4 = Util.alphabetaSearch(board, 6, 'X')
+        // expect(columnIx4).toBe(3)
+    })
+
+    it('testing sortListByMiddle', () => {
+        expect(Util.sortListByMiddle([0, 1, 2, 3, 4, 5, 6])).toEqual([3, 4, 2, 5, 1, 6, 0])
+        expect(Util.sortListByMiddle([0, 1, 2, 4, 5, 6])).toEqual([2, 4, 1, 5, 0, 6])
+        expect(Util.sortListByMiddle([0, 1, 4, 5, 6])).toEqual([4, 5, 1, 6, 0])
+        expect(Util.sortListByMiddle([0, 1, 5, 6])).toEqual([1, 5, 0, 6])
+        expect(Util.sortListByMiddle([0, 1, 2, 3, 4])).toEqual([2, 3, 1, 4, 0])
+    })
+
+    it('testing sortListByDistanceToColumnIndex3', () => {
+        const list = Util.sortListByDistanceToColumnIndex3([0, 1, 2, 3, 4, 5, 6])
+        expect(list[0].toString()).toMatch(/3/)
+        expect(list[1].toString()).toMatch(/2|4/)
+        expect(list[2].toString()).toMatch(/2|4/)
+        expect(list[3].toString()).toMatch(/1|5/)
+        expect(list[4].toString()).toMatch(/1|5/)
+        expect(list[5].toString()).toMatch(/0|6/)
+        expect(list[6].toString()).toMatch(/0|6/)
     })
 })

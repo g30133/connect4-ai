@@ -355,30 +355,37 @@ class Util {
             }
         }
 
+//        Util.sortListByDistanceToColumnIndex3(columnIxs)
+
         return columnIxs
     }
 
     // return True when the game is over
     //        False otherwise
     public static isGameOver(board:string[][]) {
+        // console.log('isGameOver()')
         //segment contains four in a row
         const segments = Util.segmentBoard(board)
         // console.log('segments:' + segments)
         for(const segment of segments) {
             // console.log('segment:' + segment)
-            if(segment[0] == segment[1] && segment[1] == segment[2] && segment[2] == segment[3] && segment[0] != '') {
+            if(segment[0] == segment[1] && segment[1] == segment[2] &&
+                segment[2] == segment[3] && segment[0] != '') {
+                // console.log('  returns true with four in a row')
+                // Util.dumpBoard(board, 6, 7)
                 return true
             }
         }
 
         //board is full
         let isFull = true
-        for(const column in board) {
+        for(const column of board) {
             if(column.indexOf('') > -1) {
                 isFull = false
             }
         }
 
+        // console.log('  returns ' + isFull + ' with isFull')
         return isFull
     }
 
@@ -530,12 +537,71 @@ class Util {
 //                 #pass
 //         return (value, move_to_return)
 
+    public static sortListByMiddle(list:number[]):number[] {
+        const newList:number[] = []
+        const middleIx = Math.floor((list.length-1)/2)
+        newList.push(list[middleIx])
+        let leftIx = middleIx-1
+        let rightIx = middleIx+1
+        while(true) {
+            let leftDone = false
+            let rightDone = false
+
+            if(rightIx < list.length) {
+                newList.push(list[rightIx])
+                rightIx++
+            } else {
+                rightDone = true
+            }
+
+            if(leftIx >= 0) {
+                newList.push(list[leftIx])
+                leftIx--
+            } else {
+                leftDone = true
+            }
+
+            // console.log('leftDone:' + leftDone + ' rightDone:' + rightDone)
+
+            if(leftDone && rightDone) {
+                break
+            }
+        }
+        
+        return newList
+    }
+
+    public static sortListByDistanceToColumnIndex3(list:number[]):number[] {
+        // let newList:number[] = []
+
+        // for(const index of list) {
+        //     newList.push(Math.abs(index - 3))
+        // }
+
+        // newList.sort((a:number, b:number) => {
+        //     return a -b
+        // })
+
+        // console.log(newList)
+        // return newList
+        let newList:number[] = []
+        newList = Array.from(list)
+        newList.sort((a:number, b:number) => {
+            return Math.abs(a-3) - Math.abs(b-3)
+        })
+
+        // console.log(newList)
+        return newList
+    }
 
     public static alphabeta(board:string[][], depth:number, alpha:number, beta:number,
                             isMaximizingPlayer:Boolean, maximizerId: string) {
+        // console.log(`alphabeta(depth:${depth}, alpha:${alpha}, beta:${beta}, isMax:${isMaximizingPlayer}, maxId:${maximizerId})`)
         // console.log(board)
-         if(depth == 0 || Util.isGameOver(board)) {
-            return Util.evaluateBoardFor(board, maximizerId)
+        if(depth == 0 || Util.isGameOver(board)) {
+            const value = Util.evaluateBoardFor(board, maximizerId)
+            // console.log('evaluation value:' + value)
+            return value
         }
         if(isMaximizingPlayer) {
             let value = -Infinity
@@ -549,7 +615,7 @@ class Util {
 
                 alpha = Math.max(alpha, value)
                 if(alpha >= beta) {
-                    //console.log('pruning')
+                    // console.log('pruning depth:' + depth + ' move:' + nextMove)
                     break
                 }
             }
@@ -569,7 +635,7 @@ class Util {
 
                 beta = Math.min(beta, value)
                 if(alpha >= beta) {
-                    //console.log('pruning')
+                    // console.log('pruning depth:' + depth + ' move:' + nextMove)
                     break
                 }
             }
@@ -630,7 +696,7 @@ class Util {
 
 
     public static alphabetaSearch(board:string[][], depth:number, aiToken:string) {
-        console.log('alphabetaSearch')
+        // console.log('alphabetaSearch')
         let value = -Infinity
         let columnIx = -1
         let alpha = -Infinity
@@ -638,20 +704,25 @@ class Util {
 
         const nextMoves = Util.nextMoves(board)
         for(let move of nextMoves) {
+            // console.log('top level branch with move:' + move)
             const newBoard = Util.moveOnBoard(board, move, aiToken)
             const returnValue = Util.alphabeta(newBoard, depth-1, alpha, beta, false, aiToken)
+            // console.log('returnValue:' + returnValue + ' value:' + value)
             if(returnValue > value) {
                 value = returnValue
                 columnIx = move
             }
 
+            // console.log('1 columnIx:' + columnIx)
+
             alpha = Math.max(alpha, value)
             if(alpha >= beta) {
-                //console.log('pruning')
+                // console.log('pruning depth:' + depth + ' move:' + move)
                 break
             }
 
         }
+        // console.log('2 columnIx:' + columnIx)
 //        const [, moveToReturn] = Util.alphabeta(board, depth, -Infinity, Infinity, true, aiToken)
         return columnIx
     }
@@ -659,7 +730,7 @@ class Util {
 
 
     public static aiMove(board:string[][], aiToken:string) {
-        console.log('aiMove()')
+        // console.log('aiMove()')
         // return Util.minimax_search(board, 5, aiToken)
         return Util.alphabetaSearch(board, 8, aiToken)
     }
