@@ -218,6 +218,56 @@ class Util {
         return score
     }
 
+    // return evaluate score of the given board for the maximizerToken
+    public static evaluateBoardForV2(board:string[][], maximizerToken:string) {
+        //TODO
+        let score = 0
+        const segments = Util.segmentBoard(board)
+//        console.log(segments)
+
+        let playerId = ''
+        if (maximizerToken != '') {
+            playerId = maximizerToken
+        } else {
+            //TODO HERE
+            playerId = 'X'   
+        }
+
+        let opponentId = (playerId == 'X') ? 'O' : 'X'
+        for(let segment of segments) {
+            const numPlayer = Util.getNumOccurences(segment, playerId)
+            const numOpponent = Util.getNumOccurences(segment, opponentId)
+            // console.log('numPlayer:' + numPlayer)
+            // console.log('numOpponent:' + numOpponent)
+            if (numOpponent == 0) {
+                if (numPlayer > 0) {
+                    if (numPlayer == 4) {
+                        score = 10000
+                        break
+                    }
+                    else if (numPlayer == 3) {
+                        score += 50
+                    }
+                    else {
+                        score += numPlayer * numPlayer
+                    }
+                }
+            }
+
+            if(numPlayer == 0) {
+                if (numOpponent > 0) {
+                    if(numOpponent == 4) {
+                        score = -10000
+                        break
+                    } else {
+                        score -= numOpponent * numOpponent
+                    }
+                }
+            }
+        }
+        return score
+    }
+
     // def segment_board(board):
     // '''
     // returns list of 4-cell segments in the given board, in horizontal, vertical and diagonally
@@ -355,7 +405,18 @@ class Util {
             }
         }
 
-//        Util.sortListByDistanceToColumnIndex3(columnIxs)
+        return columnIxs
+    }
+
+    // return array of column index for next move given the board
+    public static nextMovesCenterFirst(board:string[][]) {
+        const columnIxs = []
+
+        for (let ix of [3,2,4,1,5,0,6]) {
+            if (board[ix].indexOf('') > -1) {
+                columnIxs.push(ix)
+            }
+        }
 
         return columnIxs
     }
@@ -483,60 +544,6 @@ class Util {
         return columnIx
     }
 
-
-//     def alphabeta(board, depth, alpha, beta, is_maximizing_player, maximizer_id, eval_fn,
-//                              get_next_moves_fn=get_all_next_moves,
-//                              is_terminal_fn=is_terminal,
-//                              parent_value=None):
-//     """
-//     alpha_beta_search helper function: Return the minimax value of a particular board,
-//     given a particular depth to estimate to
-//     """
-//     # print 'alphabeta() with depth:', depth, 'is_maximizer_player:',  is_maximizing_player
-//     # print board
-//     if depth == 0 or is_terminal_fn(depth, board):
-//         return (eval_fn(board, maximizer_id), -1)
-//     if is_maximizing_player:
-//         value = -INFINITY
-//         move_to_return = -1
-//         for move, new_board in get_next_moves_fn(board):
-//             # print 'maximizer move:', move
-//             #value = max(value, alphabeta(new_board, depth-1, alpha, beta, False, eval_fn))
-//             value_returned, _ = alphabeta(new_board, depth-1, alpha, beta, False, maximizer_id, eval_fn)
-//             # print 'value_returned:', value_returned
-
-//             #value = max(value, value_returned)
-//             if value_returned > value:
-//                 value = value_returned
-//                 move_to_return = move
-
-//             alpha = max(alpha, value)
-//             if alpha >= beta:
-//                 # print 'maximizer pruning!', ' with depth', depth, 'on move', move
-//                 break
-//                 #pass
-//         return (value, move_to_return)
-//     else:
-//         value = INFINITY
-//         move_to_return = -1
-//         for move, new_board in get_next_moves_fn(board):
-//             # print 'minimizer move:', move
-// #            value = min(value, -1 * alphabeta(new_board, depth-1, alpha, beta, True, eval_fn))
-//             value_returned, _ = alphabeta(new_board, depth-1, alpha, beta, True, maximizer_id, eval_fn)
-//             # print 'value_returned:', value_returned
-
-//             # value = min(value, value_returned)
-//             if value_returned < value:
-//                 value = value_returned
-//                 move_to_return = move
-
-//             beta = min(beta, value)
-//             if alpha >= beta:
-//                 # print 'minimizer pruning!',  ' with depth', depth, 'on move', move
-//                 break
-//                 #pass
-//         return (value, move_to_return)
-
     public static sortListByMiddle(list:number[]):number[] {
         const newList:number[] = []
         const middleIx = Math.floor((list.length-1)/2)
@@ -595,20 +602,28 @@ class Util {
     }
 
     public static alphabeta(board:string[][], depth:number, alpha:number, beta:number,
-                            isMaximizingPlayer:Boolean, maximizerId: string) {
+                            isMaximizingPlayer:Boolean, maximizerId: string, evalFn:any, nextMovesFn:any, stats:any) {
         // console.log(`alphabeta(depth:${depth}, alpha:${alpha}, beta:${beta}, isMax:${isMaximizingPlayer}, maxId:${maximizerId})`)
         // console.log(board)
         if(depth == 0 || Util.isGameOver(board)) {
-            const value = Util.evaluateBoardFor(board, maximizerId)
+            let value = evalFn(board, maximizerId)
             // console.log('evaluation value:' + value)
+            if(value == 10000) {
+                value += depth
+            } else if(value == -10000) {
+                value -= depth
+            }
+            if (stats !== null) {
+                stats.numEvals++
+            }
             return value
         }
         if(isMaximizingPlayer) {
             let value = -Infinity
-            const nextMoves = Util.nextMoves(board)
+            const nextMoves = nextMovesFn(board)
             for(const nextMove of nextMoves) {
                 const newBoard = Util.moveOnBoard(board, nextMove, maximizerId)
-                const valueReturned = Util.alphabeta(newBoard, depth-1, alpha, beta, false, maximizerId)
+                const valueReturned = Util.alphabeta(newBoard, depth-1, alpha, beta, false, maximizerId, evalFn, nextMovesFn, stats)
                 if (valueReturned > value) {
                     value = valueReturned
                 }
@@ -623,10 +638,10 @@ class Util {
         } else {
             let value = Infinity
 //            maximizerId = maximizerId == 'X' ? 'O' : 'X'
-            const nextMoves = Util.nextMoves(board)
+            const nextMoves = nextMovesFn(board)
             for(const nextMove of nextMoves) {
                 const newBoard = Util.moveOnBoard(board, nextMove, (maximizerId == 'X' ? 'O' : 'X'))
-                const valueReturned = Util.alphabeta(newBoard, depth-1, alpha, beta, true, maximizerId)
+                const valueReturned = Util.alphabeta(newBoard, depth-1, alpha, beta, true, maximizerId, evalFn, nextMovesFn, stats)
                 //console.log('move:' + nextMove + ' | valueReturned:' + valueReturned + ' | value:' + value + ' | alpha:' + alpha + ' | beta:' + beta)
 
                 if(valueReturned < value) {
@@ -643,70 +658,18 @@ class Util {
         }
     }
 
-
-//     public static minimax_search(board:string[][], depth:number, maximizerToken:string) {
-// //        console.log(`minimax_search(d:${depth})`)
-//         let value = -Infinity
-//         let columnIx = -1
-
-//         const nextMoves = Util.nextMoves(board)
-//         for (let move of nextMoves) {
-//             const newBoard = Util.moveOnBoard(board, move, maximizerToken)
-//             const returnValue = Util.minimax(newBoard, depth-1, false, maximizerToken)
-//             if (returnValue > value) {
-//                 value = returnValue
-//                 columnIx = move
-//             }
-//         }
-// //s        console.log(`return value:${columnIx}`)
-//         return columnIx
-//     }
-        
-
-    // def alpha_beta_search(board, depth,
-    //                   eval_fn,
-    //                   # NOTE: You should use get_next_moves_fn when generating
-    //                   # next board configurations, and is_terminal_fn when
-    //                   # checking game termination.
-    //                   # The default functions set here will work
-    //                   # for connect_four.
-    //                   get_next_moves_fn=get_all_next_moves,
-	// 	      is_terminal_fn=is_terminal):
-    // value_returned, move_returned = alphabeta(board, depth, -INFINITY, INFINITY, True,
-    //     board.get_current_player_id(), eval_fn)
-    // return move_returned
-
-
-    // let value = -Infinity
-    // const nextMoves = Util.nextMoves(board)
-    // for(const nextMove of nextMoves) {
-    //     const newBoard = Util.moveOnBoard(board, nextMove, maximizerId)
-    //     const valueReturned = Util.alphabeta(newBoard, depth-1, alpha, beta, false, maximizerId)
-    //     if (valueReturned > value) {
-    //         value = valueReturned
-    //     }
-
-    //     alpha = Math.max(alpha, value)
-    //     if(alpha >= beta) {
-    //         console.log('pruning')
-    //         break
-    //     }
-    // }
-    // return value
-
-
-    public static alphabetaSearch(board:string[][], depth:number, aiToken:string) {
+    public static alphabetaSearch(board:string[][], depth:number, aiToken:string, evalFn:any, nextMovesFn:any, stats:any) {
         // console.log('alphabetaSearch')
         let value = -Infinity
         let columnIx = -1
         let alpha = -Infinity
         let beta = Infinity
 
-        const nextMoves = Util.nextMoves(board)
+        const nextMoves = nextMovesFn(board)
         for(let move of nextMoves) {
             // console.log('top level branch with move:' + move)
             const newBoard = Util.moveOnBoard(board, move, aiToken)
-            const returnValue = Util.alphabeta(newBoard, depth-1, alpha, beta, false, aiToken)
+            const returnValue = Util.alphabeta(newBoard, depth-1, alpha, beta, false, aiToken, evalFn, nextMovesFn, stats)
             // console.log('returnValue:' + returnValue + ' value:' + value)
             if(returnValue > value) {
                 value = returnValue
@@ -732,7 +695,7 @@ class Util {
     public static aiMove(board:string[][], aiToken:string) {
         // console.log('aiMove()')
         // return Util.minimax_search(board, 5, aiToken)
-        return Util.alphabetaSearch(board, 8, aiToken)
+        return Util.alphabetaSearch(board, 10, aiToken, Util.evaluateBoardFor, Util.nextMovesCenterFirst, null)
     }
 }
 
