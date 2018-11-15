@@ -96,7 +96,7 @@ class App extends React.Component<any, AppState> {
         this.checkGameOver()
         if(this.state.xTurn == false) {
           this.setState((prevState) => {
-            const newBoard = Array.from(prevState.board)
+            const newBoard = Util.deepcopyBoard(prevState.board)
             const aiColumn = Util.aiMove(newBoard, 'O')
             
             for(let rowIx = 0; rowIx < newBoard[aiColumn].length; rowIx++) {

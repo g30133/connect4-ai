@@ -192,6 +192,31 @@ describe('util helper functions', () => {
         expect(Util.moveOnBoard(board, 3, 'X')).not.toEqual(board)
     })
 
+    it('testing moveOnBoardWithoutCopy()', () => {
+        board[0] = ['', '', '', '', '', '']
+        board[1] = ['', '', '', '', '', '']
+        board[2] = ['', '', '', '', '', '']
+        board[3] = ['', '', '', '', '', '']
+        board[4] = ['', '', '', '', '', '']
+        board[5] = ['', '', '', '', '', '']
+        board[6] = ['', '', '', '', '', '']
+        Util.moveOnBoardWithoutCopy(board, 3, 'X')
+        expect(board[3][0]).toBe('X')
+    })
+
+    it('testing unmoveOnBoardWithoutCopy()', () => {
+        board[0] = ['', '', '', '', '', '']
+        board[1] = ['', '', '', '', '', '']
+        board[2] = ['', '', '', '', '', '']
+        board[3] = ['', '', '', '', '', '']
+        board[4] = ['', '', '', '', '', '']
+        board[5] = ['', '', '', '', '', '']
+        board[6] = ['', '', '', '', '', '']
+        Util.moveOnBoardWithoutCopy(board, 3, 'X')
+        Util.unmoveOnBoardWithoutCopy(board, 3, 'X')
+        expect(board[3][0]).toBe('X')
+    })
+
     it('testing minimax', () => {
         board[0] = ['', '', '', '', '', '']
         board[1] = ['', '', '', '', '', '']
@@ -218,9 +243,9 @@ describe('util helper functions', () => {
         board[4] = ['', '', '', '', '', '']
         board[5] = ['', '', '', '', '', '']
         board[6] = ['', '', '', '', '', '']
-        const columnIx = Util.alphabetaSearch(board, 1, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, null)
+        const columnIx = Util.alphabetaSearch(board, 1, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, null)
         expect(columnIx).toBe(3)
-        const columnIx1 = Util.alphabetaSearch(board, 2, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, null)
+        const columnIx1 = Util.alphabetaSearch(board, 2, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, null)
         expect(columnIx1).toBe(1)
         // const columnIx2 = Util.alphabetaSearch(board, 3, 'X')
         // expect(columnIx2).toBe(2)
@@ -238,7 +263,7 @@ describe('util helper functions', () => {
         board[4] = ['O', 'X', 'O', 'O', 'X', 'X']
         board[5] = ['X', 'X', 'O', 'X', '', '']
         board[6] = ['X', '', '', '', '', '']
-        const columnIx = Util.alphabetaSearch(board, 8, 'O', Util.evaluateBoardFor, Util.nextMovesCenterFirst, null)
+        const columnIx = Util.alphabetaSearch(board, 8, 'O', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, null)
         expect(columnIx).toBe(6)
         //const columnIx1 = Util.alphabetaSearch(board, 2, 'X')
         //expect(columnIx1).toBe(1)
@@ -310,7 +335,7 @@ describe('util helper functions', () => {
         expect(list1[1].toString()).toMatch(/6/)
     })
 
-    it.only('testing performance', () => {
+    it('testing alphabeta without copying board', () => {
         board[0] = ['', '', '', '', '', '']
         board[1] = ['', '', '', '', '', '']
         board[2] = ['', '', '', '', '', '']
@@ -322,23 +347,158 @@ describe('util helper functions', () => {
         const stats = {
             numEvals: 0
         }
-        Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMoves, stats)
+        Util.alphabetaSearch(board, 3, 'X', Util.evaluateBoardFor, Util.nextMoves, false, stats)
         console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+        Util.dumpBoard(board, 6, 7)
         expect(stats.numEvals).not.toBe(0)
-
-        stats.numEvals = 0
-        Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, stats)
-        console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
-        expect(stats.numEvals).not.toBe(0)
-
-        Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMoves, stats)
-        console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
-        expect(stats.numEvals).not.toBe(0)
-
-        stats.numEvals = 0
-        Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMovesCenterFirst, stats)
-        console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
-        expect(stats.numEvals).not.toBe(0)
-
     })
+
+    describe.only('testing performance with copying board', () => {
+        it('case 1', () => {
+            board[0] = ['', '', '', '', '', '']
+            board[1] = ['', '', '', '', '', '']
+            board[2] = ['', '', '', '', '', '']
+            board[3] = ['', '', '', '', '', '']
+            board[4] = ['', '', '', '', '', '']
+            board[5] = ['', '', '', '', '', '']
+            board[6] = ['', '', '', '', '', '']
+
+            const stats = {
+                numEvals: 0
+            }
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMoves, true, stats)
+            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            expect(stats.numEvals).not.toBe(0)
+        })
+
+        it('case 2', () => {
+            board[0] = ['', '', '', '', '', '']
+            board[1] = ['', '', '', '', '', '']
+            board[2] = ['', '', '', '', '', '']
+            board[3] = ['', '', '', '', '', '']
+            board[4] = ['', '', '', '', '', '']
+            board[5] = ['', '', '', '', '', '']
+            board[6] = ['', '', '', '', '', '']
+
+            const stats = {
+                numEvals: 0
+            }
+            stats.numEvals = 0
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, true, stats)
+            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            expect(stats.numEvals).not.toBe(0)
+        })
+
+        it('case 3', () => {
+            board[0] = ['', '', '', '', '', '']
+            board[1] = ['', '', '', '', '', '']
+            board[2] = ['', '', '', '', '', '']
+            board[3] = ['', '', '', '', '', '']
+            board[4] = ['', '', '', '', '', '']
+            board[5] = ['', '', '', '', '', '']
+            board[6] = ['', '', '', '', '', '']
+
+            const stats = {
+                numEvals: 0
+            }
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMoves, true, stats)
+            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            expect(stats.numEvals).not.toBe(0)
+
+        })
+
+        it('case 4', () => {
+            board[0] = ['', '', '', '', '', '']
+            board[1] = ['', '', '', '', '', '']
+            board[2] = ['', '', '', '', '', '']
+            board[3] = ['', '', '', '', '', '']
+            board[4] = ['', '', '', '', '', '']
+            board[5] = ['', '', '', '', '', '']
+            board[6] = ['', '', '', '', '', '']
+
+            const stats = {
+                numEvals: 0
+            }
+            stats.numEvals = 0
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMovesCenterFirst, true, stats)
+            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            expect(stats.numEvals).not.toBe(0)
+        })
+    })
+
+
+    describe.only('testing performance with not copying board', () => {
+        it('case 1', () => {
+            board[0] = ['', '', '', '', '', '']
+            board[1] = ['', '', '', '', '', '']
+            board[2] = ['', '', '', '', '', '']
+            board[3] = ['', '', '', '', '', '']
+            board[4] = ['', '', '', '', '', '']
+            board[5] = ['', '', '', '', '', '']
+            board[6] = ['', '', '', '', '', '']
+
+            const stats = {
+                numEvals: 0
+            }
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMoves, false, stats)
+            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            Util.dumpBoard(board, 6, 7)
+            expect(stats.numEvals).not.toBe(0)
+        })
+
+        it('case 2', () => {
+            board[0] = ['', '', '', '', '', '']
+            board[1] = ['', '', '', '', '', '']
+            board[2] = ['', '', '', '', '', '']
+            board[3] = ['', '', '', '', '', '']
+            board[4] = ['', '', '', '', '', '']
+            board[5] = ['', '', '', '', '', '']
+            board[6] = ['', '', '', '', '', '']
+
+            const stats = {
+                numEvals: 0
+            }
+            stats.numEvals = 0
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, stats)
+            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            expect(stats.numEvals).not.toBe(0)
+        })
+
+        it('case 3', () => {
+            board[0] = ['', '', '', '', '', '']
+            board[1] = ['', '', '', '', '', '']
+            board[2] = ['', '', '', '', '', '']
+            board[3] = ['', '', '', '', '', '']
+            board[4] = ['', '', '', '', '', '']
+            board[5] = ['', '', '', '', '', '']
+            board[6] = ['', '', '', '', '', '']
+
+            const stats = {
+                numEvals: 0
+            }
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMoves, false, stats)
+            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            expect(stats.numEvals).not.toBe(0)
+
+        })
+
+        it('case 4', () => {
+            board[0] = ['', '', '', '', '', '']
+            board[1] = ['', '', '', '', '', '']
+            board[2] = ['', '', '', '', '', '']
+            board[3] = ['', '', '', '', '', '']
+            board[4] = ['', '', '', '', '', '']
+            board[5] = ['', '', '', '', '', '']
+            board[6] = ['', '', '', '', '', '']
+
+            const stats = {
+                numEvals: 0
+            }
+            stats.numEvals = 0
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMovesCenterFirst, false, stats)
+            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            expect(stats.numEvals).not.toBe(0)
+        })
+    })
+
 })

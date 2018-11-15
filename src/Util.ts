@@ -177,6 +177,7 @@ class Util {
         //TODO
         let score = 0
         const segments = Util.segmentBoard(board)
+        //const segments = Util.segmentBoardWithoutCopy(board)
 //        console.log(segments)
 
         let playerId = ''
@@ -223,6 +224,7 @@ class Util {
         //TODO
         let score = 0
         const segments = Util.segmentBoard(board)
+        //const segments = Util.segmentBoardWithoutCopy(board)
 //        console.log(segments)
 
         let playerId = ''
@@ -358,8 +360,108 @@ class Util {
         }
         return scanLines
     }
+/*
+    private static segmentBoardWithoutCopy(board:string[][]) {
 
+        const scanLines = [
+            // vertical scan lines
+            [board[0][0], board[0][1], board[0][2], board[0][3]],
+            [board[0][1], board[0][2], board[0][3], board[0][4]],
+            [board[0][2], board[0][3], board[0][4], board[0][5]],
 
+            [board[1][0], board[1][1], board[1][2], board[1][3]],
+            [board[1][1], board[1][2], board[1][3], board[1][4]],
+            [board[1][2], board[1][3], board[1][4], board[1][5]],
+
+            [board[2][0], board[2][1], board[2][2], board[2][3]],
+            [board[2][1], board[2][2], board[2][3], board[2][4]],
+            [board[2][2], board[2][3], board[2][4], board[2][5]],
+
+            [board[3][0], board[3][1], board[3][2], board[3][3]],
+            [board[3][1], board[3][2], board[3][3], board[3][4]],
+            [board[3][2], board[3][3], board[3][4], board[3][5]],
+
+            [board[4][0], board[4][1], board[4][2], board[4][3]],
+            [board[4][1], board[4][2], board[4][3], board[4][4]],
+            [board[4][2], board[4][3], board[4][4], board[4][5]],
+
+            [board[5][0], board[5][1], board[5][2], board[5][3]],
+            [board[5][1], board[5][2], board[5][3], board[5][4]],
+            [board[5][2], board[5][3], board[5][4], board[5][5]],
+
+            [board[6][0], board[6][1], board[6][2], board[6][3]],
+            [board[6][1], board[6][2], board[6][3], board[6][4]],
+            [board[6][2], board[6][3], board[6][4], board[6][5]],
+
+            // horizontal scan lines
+            [board[0][0], board[1][0], board[2][0], board[3][0]],
+            [board[1][0], board[2][0], board[3][0], board[4][0]],
+            [board[2][0], board[3][0], board[4][0], board[5][0]],
+            [board[3][0], board[4][0], board[5][0], board[6][0]],
+
+            [board[0][1], board[1][1], board[2][1], board[3][1]],
+            [board[1][1], board[2][1], board[3][1], board[4][1]],
+            [board[2][1], board[3][1], board[4][1], board[5][1]],
+            [board[3][1], board[4][1], board[5][1], board[6][1]],
+
+            [board[0][2], board[1][2], board[2][2], board[3][2]],
+            [board[1][2], board[2][2], board[3][2], board[4][2]],
+            [board[2][2], board[3][2], board[4][2], board[5][2]],
+            [board[3][2], board[4][2], board[5][2], board[6][2]],
+
+            [board[0][3], board[1][3], board[2][3], board[3][3]],
+            [board[1][3], board[2][3], board[3][3], board[4][3]],
+            [board[2][3], board[3][3], board[4][3], board[5][3]],
+            [board[3][3], board[4][3], board[5][3], board[6][3]],
+
+            [board[0][4], board[1][4], board[2][4], board[3][4]],
+            [board[1][4], board[2][4], board[3][4], board[4][4]],
+            [board[2][4], board[3][4], board[4][4], board[5][4]],
+            [board[3][4], board[4][4], board[5][4], board[6][4]],
+
+            [board[0][5], board[1][5], board[2][5], board[3][5]],
+            [board[1][5], board[2][5], board[3][5], board[4][5]],
+            [board[2][5], board[3][5], board[4][5], board[5][5]],
+            [board[3][5], board[4][5], board[5][5], board[6][5]],
+
+            // diagonal scan lines
+            //rising to right
+            [board[0][0], board[1][1], board[2][2], board[3][3]],
+            [board[0][1], board[1][2], board[2][3], board[3][4]],
+            [board[0][2], board[1][3], board[2][4], board[3][5]],
+
+            [board[1][0], board[2][1], board[3][2], board[4][3]],
+            [board[1][1], board[2][2], board[3][3], board[5][4]],
+            [board[1][2], board[2][3], board[3][4], board[6][5]],
+
+            [board[2][0], board[3][1], board[4][2], board[5][3]],
+            [board[2][1], board[3][2], board[4][3], board[5][4]],
+            [board[2][2], board[3][3], board[4][4], board[5][5]],
+
+            [board[3][0], board[4][1], board[5][2], board[6][3]],
+            [board[3][1], board[4][2], board[5][3], board[6][4]],
+            [board[3][2], board[4][3], board[5][4], board[6][5]],
+
+            //falling to left
+            [board[6][0], board[5][1], board[4][2], board[3][3]],
+            [board[6][1], board[5][2], board[4][3], board[3][4]],
+            [board[6][2], board[5][3], board[4][4], board[3][5]],
+
+            [board[5][0], board[4][1], board[3][2], board[2][3]],
+            [board[5][1], board[4][2], board[3][3], board[2][4]],
+            [board[5][2], board[4][3], board[3][4], board[2][5]],
+
+            [board[4][0], board[3][1], board[2][2], board[1][3]],
+            [board[4][1], board[3][2], board[2][3], board[1][4]],
+            [board[4][2], board[3][3], board[2][4], board[1][5]],
+
+            [board[3][0], board[2][1], board[1][2], board[0][3]],
+            [board[3][1], board[2][2], board[1][3], board[0][4]],
+            [board[3][2], board[2][3], board[1][4], board[0][5]],
+        ]
+        return scanLines
+    }
+*/
     // def scan_line(board, startRow, startCol, deltaRow, deltaCol):
     // scan_line = []
 
@@ -427,6 +529,7 @@ class Util {
         // console.log('isGameOver()')
         //segment contains four in a row
         const segments = Util.segmentBoard(board)
+        //const segments = Util.segmentBoardWithoutCopy(board)
         // console.log('segments:' + segments)
         for(const segment of segments) {
             // console.log('segment:' + segment)
@@ -470,6 +573,30 @@ class Util {
         }
 
         return newBoard
+    }
+
+    public static moveOnBoardWithoutCopy(board:string[][], columnIx:number, token:string) {
+        //const newBoard = Util.deepcopyBoard(board)
+
+        for(let rowIx = 0; rowIx < 6; rowIx++) {
+            if (board[columnIx][rowIx] == '') {
+                board[columnIx][rowIx] = token
+                break
+            }            
+        }
+
+        return board
+    }
+
+    public static unmoveOnBoardWithoutCopy(board:string[][], columnIx:number, token:string) {
+        // TODO
+        for(let rowIx = 6; rowIx >= 0; rowIx--) {
+            if(board[columnIx][rowIx] == token) {
+                board[columnIx][rowIx] = ''
+                break
+            }
+        }
+        return board
     }
 
     // function minimax(node, depth, maximizingPlayer) is
@@ -533,8 +660,9 @@ class Util {
 
         const nextMoves = Util.nextMoves(board)
         for (let move of nextMoves) {
-            const newBoard = Util.moveOnBoard(board, move, maximizerToken)
-            const returnValue = Util.minimax(newBoard, depth-1, false, maximizerToken)
+            Util.moveOnBoardWithoutCopy(board, move, maximizerToken)
+            const returnValue = Util.minimax(board, depth-1, false, maximizerToken)
+            Util.unmoveOnBoardWithoutCopy(board, move, maximizerToken)
             if (returnValue > value) {
                 value = returnValue
                 columnIx = move
@@ -602,7 +730,7 @@ class Util {
     }
 
     public static alphabeta(board:string[][], depth:number, alpha:number, beta:number,
-                            isMaximizingPlayer:Boolean, maximizerId: string, evalFn:any, nextMovesFn:any, stats:any) {
+                            isMaximizingPlayer:Boolean, maximizerId: string, evalFn:any, nextMovesFn:any, copyBoard:boolean, stats:any) {
         // console.log(`alphabeta(depth:${depth}, alpha:${alpha}, beta:${beta}, isMax:${isMaximizingPlayer}, maxId:${maximizerId})`)
         // console.log(board)
         if(depth == 0 || Util.isGameOver(board)) {
@@ -622,8 +750,20 @@ class Util {
             let value = -Infinity
             const nextMoves = nextMovesFn(board)
             for(const nextMove of nextMoves) {
-                const newBoard = Util.moveOnBoard(board, nextMove, maximizerId)
-                const valueReturned = Util.alphabeta(newBoard, depth-1, alpha, beta, false, maximizerId, evalFn, nextMovesFn, stats)
+
+                let boardToWorkOn = null
+                if(copyBoard) {
+                    boardToWorkOn = Util.moveOnBoard(board, nextMove, maximizerId)
+                } else {
+                    boardToWorkOn = Util.moveOnBoardWithoutCopy(board, nextMove, maximizerId)
+                }
+
+                const valueReturned = Util.alphabeta(boardToWorkOn, depth-1, alpha, beta, false, maximizerId, evalFn, nextMovesFn, copyBoard, stats)
+
+                if(copyBoard === false) {
+                    Util.unmoveOnBoardWithoutCopy(boardToWorkOn, nextMove, maximizerId)
+                }
+
                 if (valueReturned > value) {
                     value = valueReturned
                 }
@@ -640,8 +780,27 @@ class Util {
 //            maximizerId = maximizerId == 'X' ? 'O' : 'X'
             const nextMoves = nextMovesFn(board)
             for(const nextMove of nextMoves) {
-                const newBoard = Util.moveOnBoard(board, nextMove, (maximizerId == 'X' ? 'O' : 'X'))
-                const valueReturned = Util.alphabeta(newBoard, depth-1, alpha, beta, true, maximizerId, evalFn, nextMovesFn, stats)
+                const minimizerId = (maximizerId == 'X' ? 'O' : 'X')
+                let boardToWorkOn = null
+                if(copyBoard) {
+                    boardToWorkOn = Util.moveOnBoard(board, nextMove, minimizerId)
+                } else {
+                    boardToWorkOn = Util.moveOnBoardWithoutCopy(board, nextMove, minimizerId)
+                }
+
+
+                // console.log('000 loop inside alphabeta')
+                // Util.dumpBoard(boardToWorkOn, 6, 7)
+                
+                const valueReturned = Util.alphabeta(boardToWorkOn, depth-1, alpha, beta, true, maximizerId, evalFn, nextMovesFn, copyBoard, stats)
+
+                if(copyBoard === false) {
+                    Util.unmoveOnBoardWithoutCopy(boardToWorkOn, nextMove, minimizerId)
+                }
+
+                // console.log('111 loop inside alphabeta')
+                // Util.dumpBoard(boardToWorkOn, 6, 7)
+                
                 //console.log('move:' + nextMove + ' | valueReturned:' + valueReturned + ' | value:' + value + ' | alpha:' + alpha + ' | beta:' + beta)
 
                 if(valueReturned < value) {
@@ -658,7 +817,7 @@ class Util {
         }
     }
 
-    public static alphabetaSearch(board:string[][], depth:number, aiToken:string, evalFn:any, nextMovesFn:any, stats:any) {
+    public static alphabetaSearch(board:string[][], depth:number, aiToken:string, evalFn:any, nextMovesFn:any, copyBoard:boolean, stats:any) {
         // console.log('alphabetaSearch')
         let value = -Infinity
         let columnIx = -1
@@ -668,9 +827,29 @@ class Util {
         const nextMoves = nextMovesFn(board)
         for(let move of nextMoves) {
             // console.log('top level branch with move:' + move)
-            const newBoard = Util.moveOnBoard(board, move, aiToken)
-            const returnValue = Util.alphabeta(newBoard, depth-1, alpha, beta, false, aiToken, evalFn, nextMovesFn, stats)
+
+            let boardToWorkOn = null
+            if (copyBoard) {
+                boardToWorkOn = Util.moveOnBoard(board, move, aiToken)
+            }
+            else {
+                boardToWorkOn = Util.moveOnBoardWithoutCopy(board, move, aiToken)                
+            }
+
+            // console.log('000 loop inside alphabetaSearch')
+            // Util.dumpBoard(boardToWorkOn, 6, 7)
+            
+            const returnValue = Util.alphabeta(boardToWorkOn, depth-1, alpha, beta, false, aiToken, evalFn, nextMovesFn, copyBoard, stats)
             // console.log('returnValue:' + returnValue + ' value:' + value)
+
+
+            if (copyBoard === false) {
+                Util.unmoveOnBoardWithoutCopy(boardToWorkOn, move, aiToken)
+            }
+
+            // console.log('111 loop inside alphabetaSearch')
+            // Util.dumpBoard(boardToWorkOn, 6, 7)
+
             if(returnValue > value) {
                 value = returnValue
                 columnIx = move
@@ -695,7 +874,7 @@ class Util {
     public static aiMove(board:string[][], aiToken:string) {
         // console.log('aiMove()')
         // return Util.minimax_search(board, 5, aiToken)
-        return Util.alphabetaSearch(board, 10, aiToken, Util.evaluateBoardFor, Util.nextMovesCenterFirst, null)
+        return Util.alphabetaSearch(board, 10, aiToken, Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, null)
     }
 }
 
