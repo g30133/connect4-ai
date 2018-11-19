@@ -826,12 +826,15 @@ class Util {
 
         const nextMoves = nextMovesFn(board)
         console.log('nextmoves.length:' + nextMoves.length)
+        let progress = 0
         for(let move of nextMoves) {
 
-            const progressBar:HTMLProgressElement|null = document.querySelector('.aiprogress')
-            if (progressBar) {
-                progressBar.value += 100/(nextMoves.length)
-            }
+            // const progressBar:HTMLProgressElement|null = document.querySelector('.aiprogress')
+            // if (progressBar) {
+            //     progressBar.value += 100/(nextMoves.length)
+            // }
+            progress += 100/nextMoves.length
+            postMessage({progress:progress})
 
             let boardToWorkOn = null
             if (copyBoard) {

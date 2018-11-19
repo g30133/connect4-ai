@@ -5,13 +5,18 @@ import Board from './Board'
 import Message from './Message'
 import Util from './Util'
 
+import Worker from 'worker-loader!./ai.worker'
+
 interface AppState {
   board: string[][]
   xTurn: boolean
   winner: string
+  progress: number
 }
 
 class App extends React.Component<any, AppState> {
+
+  private worker:any
 
   constructor(props:any) {
     super(props)
@@ -27,8 +32,62 @@ class App extends React.Component<any, AppState> {
         ['','','','','',''],
         ['','','','','','']],
       xTurn: true,
-      winner: ''
+      winner: '',
+      progress: 0
     }
+
+    this.initWorker()
+  }
+
+  private initWorker() {
+    this.worker = new Worker();
+
+    //this.worker.postMessage({ board:, depth: });
+
+    //this.worker.onmessage = (event:any) => {
+    //  console.log('onmessage from worker', event);
+    //};
+    
+    this.worker.addEventListener('message', (event:any) => {
+      console.log('data from worker:', event.data);
+      console.log('event.data.colIx:' + event.data.colIx)
+      if (event.data.colIx !== undefined) {
+        console.log('inside if block!!')
+        console.log('event data', event.data)
+        const aiColumn = event.data.colIx
+
+        this.setState((prevState) => {
+          const newBoard = Util.deepcopyBoard(prevState.board)
+  
+          for(let rowIx = 0; rowIx < newBoard[aiColumn].length; rowIx++) {
+            if(newBoard[aiColumn][rowIx] === '') {
+              newBoard[aiColumn][rowIx] = 'O'
+              break
+            }
+          }
+
+          const winner = Util.checkForWinner(newBoard)
+  
+          return {
+            board: newBoard,
+            xTurn: true,
+            winner: winner
+          }
+        })
+      }
+      
+      if (event.data.progress !== undefined) {
+        // const progressBar:HTMLProgressElement|null = document.querySelector('.aiprogress')
+        // progressBar.value = event.data.progress
+        // if (progressBar) {
+        // }
+        console.log('xTurn:' + this.state.xTurn)
+        this.setState({
+          progress: event.data.progress,
+          // xTurn: true
+        })
+      }
+    });
   }
 
   private onColumnClicked(colIx:number) {
@@ -63,22 +122,19 @@ class App extends React.Component<any, AppState> {
         board: newBoard,
         xTurn: false
       }
-    }
-    )
-  }
+    },
+    () => {
+      console.log('aiMove')
+      Util.dumpBoard(this.state.board, 6, 7)
 
-  public componentDidUpdate() {
-    // console.log('componentDidUpdate')
-    Util.dumpBoard(this.state.board, 6, 7)
-
-
-    setTimeout(() => {
       if(this.state.winner == '') {
-        this.checkGameOver()
-        if(this.state.xTurn == false) {
-          this.setState((prevState) => {
+//        this.checkGameOver()
+        const winner = Util.checkForWinner(this.state.board)
+        console.log('winner:' + winner)
+        if(winner == '') {
+          if(this.state.xTurn == false) {
             let aiDepth = -1
- 
+  
             // const depthSelect = document.getElementById('.depthselect')
             // console.log(depthSelect.)
             const depthSelect:HTMLSelectElement|null = document.querySelector('.depthselect')
@@ -95,44 +151,28 @@ class App extends React.Component<any, AppState> {
                 aiDepth = 2
               }
             }
-
-            const newBoard = Util.deepcopyBoard(prevState.board)
-            const aiColumn = Util.aiMove(newBoard, aiDepth, 'O')
-            //const aiColumn = this.worker.postMessage({board:JSON.stringify(prevState.board), depth:aiDepth, aiMark:'O'})
-
-            const progressBar:HTMLProgressElement|null = document.querySelector('.aiprogress')
-            if (progressBar) {
-                progressBar.value = 0
-            }
-            
-            for(let rowIx = 0; rowIx < newBoard[aiColumn].length; rowIx++) {
-              if(newBoard[aiColumn][rowIx] === '') {
-                newBoard[aiColumn][rowIx] = 'O'
-                break
-              }
-            }
-    
-            return {
-              board: newBoard,
-              xTurn: true,
-            }
+  
+            //const aiColumn = Util.aiMove(newBoard, aiDepth, 'O')
+            this.worker.postMessage({board:this.state.board, depth:aiDepth, aiMark:'O'})
+          }            
+        } else {
+          this.setState({
+            winner: winner
           })
         }
       }  
-    }, 100)
+    })
   }
 
-  private checkGameOver() {
-    const winner = Util.checkForWinner(this.state.board)
-    // console.log('winner:' + winner)
-    if(winner != '') {
-      this.setState(() => {
-        return {
-          winner: winner
-        }
-      })
-    }
-  }
+  // private checkGameOver() {
+  //   const winner = Util.checkForWinner(this.state.board)
+  //   // console.log('winner:' + winner)
+  //   if (winner != '') {
+  //     this.setState({
+  //         winner: winner
+  //     })
+  //   }
+  // }
 
   public render() {
     // console.log('render()')
@@ -141,8 +181,7 @@ class App extends React.Component<any, AppState> {
       <div className="app">
         <label className='aititle'>Ai Thinking...</label>
         <progress className='aiprogress'
-                  max="100" value="0">
-          70
+                  max="100" value={this.state.progress}>
         </progress>
         <Board
           columns={this.state.board}
