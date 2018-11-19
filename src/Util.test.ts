@@ -225,17 +225,29 @@ describe('util helper functions', () => {
         board[4] = ['', '', '', '', '', '']
         board[5] = ['', '', '', '', '', '']
         board[6] = ['', '', '', '', '', '']
-        const columnIx = Util.minimax_search(board, 1, 'X')
-        expect(columnIx).toBe(3)
-        const columnIx1 = Util.minimax_search(board, 2, 'X')
-        expect(columnIx1).toBe(1)
-        const columnIx2 = Util.minimax_search(board, 3, 'X')
-        expect(columnIx2).toBe(2)
-        const columnIx3 = Util.minimax_search(board, 4, 'X')
-        expect(columnIx3).toBe(2)
+        // const columnIx = Util.minimax_search(board, 1, 'X')
+        // expect(columnIx).toBe(3)
+        // const columnIx1 = Util.minimax_search(board, 2, 'X')
+        // expect(columnIx1).toBe(1)
+        // const columnIx2 = Util.minimax_search(board, 3, 'X')
+        // expect(columnIx2).toBe(2)
+        // const columnIx3 = Util.minimax_search(board, 4, 'X')
+        // expect(columnIx3).toBe(2)
+        // const columnIx4 = Util.minimax_search(board, 5, 'X')
+        // expect(columnIx4).toBe(2)
+        // const columnIx5 = Util.minimax_search(board, 6, 'X')
+        // expect(columnIx5).toBe(3)
+        // const columnIx6 = Util.minimax_search(board, 7, 'X')
+        // expect(columnIx6).toBe(3)
+        const columnIx7 = Util.minimax_search(board, 8, 'X')
+        expect(columnIx7).toBe(2)
+        // const columnIx8 = Util.minimax_search(board, 9, 'X')
+        // expect(columnIx8).toBe(3)
+        // const columnIx9 = Util.minimax_search(board, 10, 'X')
+        // expect(columnIx9).toBe(2)
     })
 
-    it('testin alphabeta', () => {
+    it.only('testin alphabeta', () => {
         board[0] = ['', '', '', '', '', '']
         board[1] = ['', '', '', '', '', '']
         board[2] = ['', '', '', '', '', '']
@@ -243,12 +255,14 @@ describe('util helper functions', () => {
         board[4] = ['', '', '', '', '', '']
         board[5] = ['', '', '', '', '', '']
         board[6] = ['', '', '', '', '', '']
-        const columnIx = Util.alphabetaSearch(board, 1, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, null)
-        expect(columnIx).toBe(3)
-        const columnIx1 = Util.alphabetaSearch(board, 2, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, null)
-        expect(columnIx1).toBe(1)
-        // const columnIx2 = Util.alphabetaSearch(board, 3, 'X')
+        // const columnIx = Util.alphabetaSearch(board, 1, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false)
+        // expect(columnIx).toBe(3)
+        // const columnIx1 = Util.alphabetaSearch(board, 2, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false)
+        // expect(columnIx1).toBe(3)
+        // const columnIx2 = Util.alphabetaSearch(board, 3, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false)
         // expect(columnIx2).toBe(2)
+        const columnIx3 = Util.alphabetaSearch(board, 12, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false)
+        expect(columnIx3).toBe(3)
         // const columnIx3 = Util.alphabetaSearch(board, 4, 'X')
         // expect(columnIx3).toBe(2)
         // const columnIx4 = Util.alphabetaSearch(board, 6, 'X')
@@ -263,7 +277,7 @@ describe('util helper functions', () => {
         board[4] = ['O', 'X', 'O', 'O', 'X', 'X']
         board[5] = ['X', 'X', 'O', 'X', '', '']
         board[6] = ['X', '', '', '', '', '']
-        const columnIx = Util.alphabetaSearch(board, 8, 'O', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, null)
+        const columnIx = Util.alphabetaSearch(board, 8, 'O', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false)
         expect(columnIx).toBe(6)
         //const columnIx1 = Util.alphabetaSearch(board, 2, 'X')
         //expect(columnIx1).toBe(1)
@@ -347,13 +361,12 @@ describe('util helper functions', () => {
         const stats = {
             numEvals: 0
         }
-        Util.alphabetaSearch(board, 3, 'X', Util.evaluateBoardFor, Util.nextMoves, false, stats)
-        console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+        Util.alphabetaSearch(board, 3, 'X', Util.evaluateBoardFor, Util.nextMoves, false)
         Util.dumpBoard(board, 6, 7)
         expect(stats.numEvals).not.toBe(0)
     })
 
-    describe.only('testing performance with copying board', () => {
+    describe('testing performance with copying board', () => {
         it('case 1', () => {
             board[0] = ['', '', '', '', '', '']
             board[1] = ['', '', '', '', '', '']
@@ -366,8 +379,7 @@ describe('util helper functions', () => {
             const stats = {
                 numEvals: 0
             }
-            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMoves, true, stats)
-            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMoves, true)
             expect(stats.numEvals).not.toBe(0)
         })
 
@@ -384,8 +396,7 @@ describe('util helper functions', () => {
                 numEvals: 0
             }
             stats.numEvals = 0
-            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, true, stats)
-            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, true)
             expect(stats.numEvals).not.toBe(0)
         })
 
@@ -401,8 +412,7 @@ describe('util helper functions', () => {
             const stats = {
                 numEvals: 0
             }
-            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMoves, true, stats)
-            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMoves, true)
             expect(stats.numEvals).not.toBe(0)
 
         })
@@ -420,14 +430,13 @@ describe('util helper functions', () => {
                 numEvals: 0
             }
             stats.numEvals = 0
-            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMovesCenterFirst, true, stats)
-            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMovesCenterFirst, true)
             expect(stats.numEvals).not.toBe(0)
         })
     })
 
 
-    describe.only('testing performance with not copying board', () => {
+    describe('testing performance with not copying board', () => {
         it('case 1', () => {
             board[0] = ['', '', '', '', '', '']
             board[1] = ['', '', '', '', '', '']
@@ -440,8 +449,7 @@ describe('util helper functions', () => {
             const stats = {
                 numEvals: 0
             }
-            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMoves, false, stats)
-            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMoves, false)
             Util.dumpBoard(board, 6, 7)
             expect(stats.numEvals).not.toBe(0)
         })
@@ -459,8 +467,7 @@ describe('util helper functions', () => {
                 numEvals: 0
             }
             stats.numEvals = 0
-            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, stats)
-            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardFor, Util.nextMovesCenterFirst, false)
             expect(stats.numEvals).not.toBe(0)
         })
 
@@ -476,8 +483,7 @@ describe('util helper functions', () => {
             const stats = {
                 numEvals: 0
             }
-            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMoves, false, stats)
-            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMoves, false)
             expect(stats.numEvals).not.toBe(0)
 
         })
@@ -495,8 +501,7 @@ describe('util helper functions', () => {
                 numEvals: 0
             }
             stats.numEvals = 0
-            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMovesCenterFirst, false, stats)
-            console.log('numCases:' + 7 ** 8 + ' numEvals:' + stats.numEvals + ' numEvals/numCases:' + stats.numEvals/(7**8))
+            Util.alphabetaSearch(board, 8, 'X', Util.evaluateBoardForV2, Util.nextMovesCenterFirst, false)
             expect(stats.numEvals).not.toBe(0)
         })
     })

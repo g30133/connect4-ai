@@ -612,44 +612,55 @@ class Util {
     //     for each child of node do
     //         value := min(value, minimax(child, depth − 1, TRUE))
     //     return value
-    public static minimax(board:string[][], depth:number, isMaximizer:Boolean, maximizerToken:string) {
+    public static minimax(board:string[][], depth:number, isMaximizer:Boolean, maximizerToken:string, memo:object, stats:any) {
 //        console.log(`minimax d:${depth}, isMax:${isMaximizer} maxToken:${maximizerToken}`)
 //        Util.dumpBoard(board, board[0].length, board.length)
         let value = 0
-
-        if(depth == 0 || Util.isGameOver(board)) {
-            value = Util.evaluateBoardFor(board, maximizerToken)
+        
+        // checking memo first
+        const key = JSON.stringify(board) + depth
+        const val = memo[key]
+        if (val !== undefined) {
+            value = val
+            stats.hitCount++
         }
         else {
-            if (isMaximizer) {
-                value = -Infinity
-    
-                const nextMoves = Util.nextMoves(board)
-                for (let move of nextMoves) {
-                    const newBoard = Util.moveOnBoard(board, move, maximizerToken)
-                    const returnValue = Util.minimax(newBoard, depth-1, false, maximizerToken)
-                    if (returnValue > value) {
-                        value = returnValue
-                    }
-                }
-                
+            if(depth == 0 || Util.isGameOver(board)) {
+                value = Util.evaluateBoardFor(board, maximizerToken)
             }
             else {
-                value = Infinity
-    
-                const nextMoves = Util.nextMoves(board)
-                for(let move of nextMoves) {
-                    const minimizerToken = (maximizerToken == 'X') ? 'O' : 'X'
-                    const newBoard = Util.moveOnBoard(board, move, minimizerToken)
-                    const returnValue = Util.minimax(newBoard, depth-1, true, maximizerToken)
-                    if(returnValue < value) {
-                        value = returnValue
+                if (isMaximizer) {
+                    value = -Infinity
+        
+                    const nextMoves = Util.nextMoves(board)
+                    for (let move of nextMoves) {
+                        const newBoard = Util.moveOnBoard(board, move, maximizerToken)
+                        const returnValue = Util.minimax(newBoard, depth-1, false, maximizerToken, memo, stats)
+                        if (returnValue > value) {
+                            value = returnValue
+                        }
+                    }
+                    
+                }
+                else {
+                    value = Infinity
+        
+                    const nextMoves = Util.nextMoves(board)
+                    for(let move of nextMoves) {
+                        const minimizerToken = (maximizerToken == 'X') ? 'O' : 'X'
+                        const newBoard = Util.moveOnBoard(board, move, minimizerToken)
+                        const returnValue = Util.minimax(newBoard, depth-1, true, maximizerToken, memo, stats)
+                        if(returnValue < value) {
+                            value = returnValue
+                        }
                     }
                 }
             }
         }
-
 //        console.log(`return value:${value}`)
+        if (val !== value) {
+            memo[key] = value
+        }
         return value
     }
 
@@ -657,11 +668,15 @@ class Util {
 //        console.log(`minimax_search(d:${depth})`)
         let value = -Infinity
         let columnIx = -1
+        const memo = {}
+        const stats = {
+            hitCount: 0
+        }
 
         const nextMoves = Util.nextMoves(board)
         for (let move of nextMoves) {
             Util.moveOnBoardWithoutCopy(board, move, maximizerToken)
-            const returnValue = Util.minimax(board, depth-1, false, maximizerToken)
+            const returnValue = Util.minimax(board, depth-1, false, maximizerToken, memo, stats)
             Util.unmoveOnBoardWithoutCopy(board, move, maximizerToken)
             if (returnValue > value) {
                 value = returnValue
@@ -669,6 +684,7 @@ class Util {
             }
         }
 //s        console.log(`return value:${columnIx}`)
+        console.log('hitCount:' + stats.hitCount)
         return columnIx
     }
 
@@ -730,99 +746,119 @@ class Util {
     }
 
     public static alphabeta(board:string[][], depth:number, alpha:number, beta:number,
-                            isMaximizingPlayer:Boolean, maximizerId: string, evalFn:any, nextMovesFn:any, copyBoard:boolean, stats:any) {
+                            isMaximizingPlayer:Boolean, maximizerId: string, evalFn:any,
+                            nextMovesFn:any, copyBoard:boolean, memo:object, stats:any) {
         // console.log(`alphabeta(depth:${depth}, alpha:${alpha}, beta:${beta}, isMax:${isMaximizingPlayer}, maxId:${maximizerId})`)
         // console.log(board)
-        if(depth == 0 || Util.isGameOver(board)) {
-            let value = evalFn(board, maximizerId)
-            // console.log('evaluation value:' + value)
-            if(value == 10000) {
-                value += depth
-            } else if(value == -10000) {
-                value -= depth
-            }
-            if (stats !== null) {
-                stats.numEvals++
-            }
-            return value
+        let value = 0
+
+        const key = JSON.stringify(board) + depth
+        const val = memo[key]
+        if(val !== undefined) {
+            value = val
+            stats.hitCount++
         }
-        if(isMaximizingPlayer) {
-            let value = -Infinity
-            const nextMoves = nextMovesFn(board)
-            for(const nextMove of nextMoves) {
-
-                let boardToWorkOn = null
-                if(copyBoard) {
-                    boardToWorkOn = Util.moveOnBoard(board, nextMove, maximizerId)
-                } else {
-                    boardToWorkOn = Util.moveOnBoardWithoutCopy(board, nextMove, maximizerId)
+        else {
+            if(depth == 0 || Util.isGameOver(board)) {
+                value = evalFn(board, maximizerId)
+                // console.log('evaluation value:' + value)
+                if(value == 10000) {
+                    value += depth
+                } else if(value == -10000) {
+                    value -= depth
                 }
-
-                const valueReturned = Util.alphabeta(boardToWorkOn, depth-1, alpha, beta, false, maximizerId, evalFn, nextMovesFn, copyBoard, stats)
-
-                if(copyBoard === false) {
-                    Util.unmoveOnBoardWithoutCopy(boardToWorkOn, nextMove, maximizerId)
-                }
-
-                if (valueReturned > value) {
-                    value = valueReturned
-                }
-
-                alpha = Math.max(alpha, value)
-                if(alpha >= beta) {
-                    // console.log('pruning depth:' + depth + ' move:' + nextMove)
-                    break
+                if (stats !== null) {
+                    stats.numEvals++
                 }
             }
-            return value
-        } else {
-            let value = Infinity
-//            maximizerId = maximizerId == 'X' ? 'O' : 'X'
-            const nextMoves = nextMovesFn(board)
-            for(const nextMove of nextMoves) {
-                const minimizerId = (maximizerId == 'X' ? 'O' : 'X')
-                let boardToWorkOn = null
-                if(copyBoard) {
-                    boardToWorkOn = Util.moveOnBoard(board, nextMove, minimizerId)
+            else {
+                if(isMaximizingPlayer) {
+                    value = -Infinity
+                    const nextMoves = nextMovesFn(board)
+                    for(const nextMove of nextMoves) {
+                        let boardToWorkOn = null
+                        if(copyBoard) {
+                            boardToWorkOn = Util.moveOnBoard(board, nextMove, maximizerId)
+                        } else {
+                            boardToWorkOn = Util.moveOnBoardWithoutCopy(board, nextMove, maximizerId)
+                        }
+        
+                        const valueReturned = Util.alphabeta(boardToWorkOn, depth-1, alpha, beta, false,
+                                                maximizerId, evalFn, nextMovesFn, copyBoard, memo, stats)
+        
+                        if(copyBoard === false) {
+                            Util.unmoveOnBoardWithoutCopy(boardToWorkOn, nextMove, maximizerId)
+                        }
+        
+                        if (valueReturned > value) {
+                            value = valueReturned
+                        }
+        
+                        alpha = Math.max(alpha, value)
+                        if(alpha >= beta) {
+                            // console.log('pruning depth:' + depth + ' move:' + nextMove)
+                            break
+                        }
+                    }
                 } else {
-                    boardToWorkOn = Util.moveOnBoardWithoutCopy(board, nextMove, minimizerId)
+                    value = Infinity
+        //            maximizerId = maximizerId == 'X' ? 'O' : 'X'
+                    const nextMoves = nextMovesFn(board)
+                    for(const nextMove of nextMoves) {
+                        const minimizerId = (maximizerId == 'X' ? 'O' : 'X')
+                        let boardToWorkOn = null
+                        if(copyBoard) {
+                            boardToWorkOn = Util.moveOnBoard(board, nextMove, minimizerId)
+                        } else {
+                            boardToWorkOn = Util.moveOnBoardWithoutCopy(board, nextMove, minimizerId)
+                        }
+        
+        
+                        // console.log('000 loop inside alphabeta')
+                        // Util.dumpBoard(boardToWorkOn, 6, 7)
+                        
+                        const valueReturned = Util.alphabeta(boardToWorkOn, depth-1, alpha, beta, true,
+                                                maximizerId, evalFn, nextMovesFn, copyBoard, memo, stats)
+        
+                        if(copyBoard === false) {
+                            Util.unmoveOnBoardWithoutCopy(boardToWorkOn, nextMove, minimizerId)
+                        }
+        
+                        // console.log('111 loop inside alphabeta')
+                        // Util.dumpBoard(boardToWorkOn, 6, 7)
+                        
+                        //console.log('move:' + nextMove + ' | valueReturned:' + valueReturned + ' | value:' + value + ' | alpha:' + alpha + ' | beta:' + beta)
+        
+                        if(valueReturned < value) {
+                            value = valueReturned
+                        }
+        
+                        beta = Math.min(beta, value)
+                        if(alpha >= beta) {
+                            // console.log('pruning depth:' + depth + ' move:' + nextMove)
+                            break
+                        }
+                    }    
                 }
-
-
-                // console.log('000 loop inside alphabeta')
-                // Util.dumpBoard(boardToWorkOn, 6, 7)
-                
-                const valueReturned = Util.alphabeta(boardToWorkOn, depth-1, alpha, beta, true, maximizerId, evalFn, nextMovesFn, copyBoard, stats)
-
-                if(copyBoard === false) {
-                    Util.unmoveOnBoardWithoutCopy(boardToWorkOn, nextMove, minimizerId)
-                }
-
-                // console.log('111 loop inside alphabeta')
-                // Util.dumpBoard(boardToWorkOn, 6, 7)
-                
-                //console.log('move:' + nextMove + ' | valueReturned:' + valueReturned + ' | value:' + value + ' | alpha:' + alpha + ' | beta:' + beta)
-
-                if(valueReturned < value) {
-                    value = valueReturned
-                }
-
-                beta = Math.min(beta, value)
-                if(alpha >= beta) {
-                    // console.log('pruning depth:' + depth + ' move:' + nextMove)
-                    break
-                }
-            }
-            return value
+            }   
         }
+        if(val !== value) {
+            memo[key] = value
+        }
+        return value
     }
 
-    public static alphabetaSearch(board:string[][], depth:number, aiToken:string, evalFn:any, nextMovesFn:any, copyBoard:boolean, stats:any) {
+    public static alphabetaSearch(board:string[][], depth:number, aiToken:string, evalFn:any, nextMovesFn:any, copyBoard:boolean) {
         // console.log('alphabetaSearch')
         let value = -Infinity
         let columnIx = -1
         let alpha = -Infinity
         let beta = Infinity
+        const memo = {}
+        const stats = {
+            numEvals: 0,
+            hitCount: 0
+        }
 
         const nextMoves = nextMovesFn(board)
         console.log('nextmoves.length:' + nextMoves.length)
@@ -847,7 +883,7 @@ class Util {
             // console.log('000 loop inside alphabetaSearch')
             // Util.dumpBoard(boardToWorkOn, 6, 7)
             
-            const returnValue = Util.alphabeta(boardToWorkOn, depth-1, alpha, beta, false, aiToken, evalFn, nextMovesFn, copyBoard, stats)
+            const returnValue = Util.alphabeta(boardToWorkOn, depth-1, alpha, beta, false, aiToken, evalFn, nextMovesFn, copyBoard, memo, stats)
             // console.log('returnValue:' + returnValue + ' value:' + value)
 
 
@@ -874,6 +910,8 @@ class Util {
         }
         // console.log('2 columnIx:' + columnIx)
 //        const [, moveToReturn] = Util.alphabeta(board, depth, -Infinity, Infinity, true, aiToken)
+        console.log('numEvals:' + stats.numEvals)
+        console.log('hitCount:' + stats.hitCount)
         return columnIx
     }
 
@@ -883,7 +921,7 @@ class Util {
         // console.log('aiMove()')
         // return Util.minimax_search(board, 5, aiToken)
         // console.log('aiDepth:' + depth)
-        return Util.alphabetaSearch(board, depth, aiToken, Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, null)
+        return Util.alphabetaSearch(board, depth, aiToken, Util.evaluateBoardFor, Util.nextMovesCenterFirst, false)
     }
 }
 

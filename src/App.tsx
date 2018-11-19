@@ -142,12 +142,14 @@ class App extends React.Component<any, AppState> {
               console.log(depthSelect)
               const difficulty = depthSelect.options[depthSelect.selectedIndex].text
               if(difficulty == 'expert') {
-                aiDepth = 8
+                aiDepth = 10
               } else if(difficulty == 'hard') {
-                aiDepth = 6
+                aiDepth = 8
               } else if(difficulty == 'easy') {
-                aiDepth = 4
+                aiDepth = 6
               } else if(difficulty == 'noob') {
+                aiDepth = 4
+              } else if(difficulty == 'beginner') {
                 aiDepth = 2
               }
             }
@@ -193,6 +195,7 @@ class App extends React.Component<any, AppState> {
           <option value='hard'>hard</option>
           <option value='easy'>easy</option>
           <option value='noob'>noob</option>
+          <option value='beginner'>beginner</option>
 
         </select>
 
