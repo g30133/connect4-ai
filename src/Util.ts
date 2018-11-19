@@ -825,8 +825,13 @@ class Util {
         let beta = Infinity
 
         const nextMoves = nextMovesFn(board)
+        console.log('nextmoves.length:' + nextMoves.length)
         for(let move of nextMoves) {
-            // console.log('top level branch with move:' + move)
+
+            const progressBar:HTMLProgressElement|null = document.querySelector('.aiprogress')
+            if (progressBar) {
+                progressBar.value += 100/(nextMoves.length)
+            }
 
             let boardToWorkOn = null
             if (copyBoard) {
@@ -871,10 +876,11 @@ class Util {
 
 
 
-    public static aiMove(board:string[][], aiToken:string) {
+    public static aiMove(board:string[][], depth:number, aiToken:string) {
         // console.log('aiMove()')
         // return Util.minimax_search(board, 5, aiToken)
-        return Util.alphabetaSearch(board, 10, aiToken, Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, null)
+        // console.log('aiDepth:' + depth)
+        return Util.alphabetaSearch(board, depth, aiToken, Util.evaluateBoardFor, Util.nextMovesCenterFirst, false, null)
     }
 }
 

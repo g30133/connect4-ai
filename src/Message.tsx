@@ -10,9 +10,9 @@ class Message extends React.Component<MessageProps> {
     public render() {
         let message = ''
         if(this.props.xTurn === true) {
-            message = 'X Turn'
+            message = 'Your Turn'
         } else {
-            message = 'O Turn'
+            message = 'AI Turn'
         }
 
         if(this.props.winner === 'tie') {
