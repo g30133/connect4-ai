@@ -684,7 +684,7 @@ class Util {
             }
         }
 //s        console.log(`return value:${columnIx}`)
-        console.log('hitCount:' + stats.hitCount)
+        // console.log('hitCount:' + stats.hitCount)
         return columnIx
     }
 
@@ -861,7 +861,7 @@ class Util {
         }
 
         const nextMoves = nextMovesFn(board)
-        console.log('nextmoves.length:' + nextMoves.length)
+        // console.log('nextmoves.length:' + nextMoves.length)
         let progress = 0
         for(let move of nextMoves) {
 
@@ -910,8 +910,8 @@ class Util {
         }
         // console.log('2 columnIx:' + columnIx)
 //        const [, moveToReturn] = Util.alphabeta(board, depth, -Infinity, Infinity, true, aiToken)
-        console.log('numEvals:' + stats.numEvals)
-        console.log('hitCount:' + stats.hitCount)
+        // console.log('numEvals:' + stats.numEvals)
+        // console.log('hitCount:' + stats.hitCount)
         return columnIx
     }
 

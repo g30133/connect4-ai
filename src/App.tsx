@@ -49,11 +49,11 @@ class App extends React.Component<any, AppState> {
     //};
     
     this.worker.addEventListener('message', (event:any) => {
-      console.log('data from worker:', event.data);
-      console.log('event.data.colIx:' + event.data.colIx)
+      // console.log('data from worker:', event.data);
+      // console.log('event.data.colIx:' + event.data.colIx)
       if (event.data.colIx !== undefined) {
-        console.log('inside if block!!')
-        console.log('event data', event.data)
+        // console.log('inside if block!!')
+        // console.log('event data', event.data)
         const aiColumn = event.data.colIx
 
         this.setState((prevState) => {
@@ -81,7 +81,7 @@ class App extends React.Component<any, AppState> {
         // progressBar.value = event.data.progress
         // if (progressBar) {
         // }
-        console.log('xTurn:' + this.state.xTurn)
+        // console.log('xTurn:' + this.state.xTurn)
         this.setState({
           progress: event.data.progress,
           // xTurn: true
@@ -92,7 +92,7 @@ class App extends React.Component<any, AppState> {
 
   private onColumnClicked(colIx:number) {
 //    console.log('onColumnClicked(' + colIx + ')')
-    console.log('this.state.xTurn:' + this.state.xTurn)
+    // console.log('this.state.xTurn:' + this.state.xTurn)
     if(this.state.winner === '' && this.state.xTurn === true) {
 //      this.addToColumn(colIx, this.state.xTurn ? 'X' : 'O')
 //      if (this.state.xTurn) {
@@ -116,7 +116,7 @@ class App extends React.Component<any, AppState> {
         }
       }
 
-      Util.dumpBoard(newBoard, 6, 7)
+      // Util.dumpBoard(newBoard, 6, 7)
 
       return {
         board: newBoard,
@@ -124,13 +124,13 @@ class App extends React.Component<any, AppState> {
       }
     },
     () => {
-      console.log('aiMove')
-      Util.dumpBoard(this.state.board, 6, 7)
+      // console.log('aiMove')
+      // Util.dumpBoard(this.state.board, 6, 7)
 
       if(this.state.winner == '') {
 //        this.checkGameOver()
         const winner = Util.checkForWinner(this.state.board)
-        console.log('winner:' + winner)
+        // console.log('winner:' + winner)
         if(winner == '') {
           if(this.state.xTurn == false) {
             let aiDepth = -1
@@ -139,7 +139,7 @@ class App extends React.Component<any, AppState> {
             // console.log(depthSelect.)
             const depthSelect:HTMLSelectElement|null = document.querySelector('.depthselect')
             if (depthSelect) {
-              console.log(depthSelect)
+              // console.log(depthSelect)
               const difficulty = depthSelect.options[depthSelect.selectedIndex].text
               if(difficulty == 'expert') {
                 aiDepth = 10
@@ -178,7 +178,7 @@ class App extends React.Component<any, AppState> {
 
   public render() {
     // console.log('render()')
-    Util.dumpBoard(this.state.board, 6, 7)
+    // Util.dumpBoard(this.state.board, 6, 7)
     return (
       <div className="app">
         <label className='aititle'>Ai Thinking...</label>
