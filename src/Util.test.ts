@@ -122,6 +122,19 @@ describe('util helper functions', () => {
 
     })
 
+    it('testing evaluateBoardFor real bug', () => {
+        board[0] = ['', '', '', '', '', '']
+        board[1] = ['', '', '', '', '', '']
+        board[2] = ['', '', '', '', '', '']
+        board[3] = ['X', 'O', 'X', 'O', 'X', 'O']
+        board[4] = ['X', '', '', '', '', '']
+        board[5] = ['', '', '', '', '', '']
+        board[6] = ['O', 'X', 'O', '', '', '']
+        console.log(JSON.stringify(board) + 10)
+        expect(Util.evaluateBoardFor(board, 'O')).toBe(-3)
+    })
+
+
     it('testing nextMoves', () => {
         board[0] = ['', '', '', '', '', '']
         board[1] = ['', '', '', '', '', '']
@@ -247,7 +260,19 @@ describe('util helper functions', () => {
         // expect(columnIx9).toBe(2)
     })
 
-    it.only('testin alphabeta', () => {
+    it('testing minimax from real bug 3', () => {
+        board[0] = ['', '', '', '', '', '']
+        board[1] = ['', '', '', '', '', '']
+        board[2] = ['', '', '', '', '', '']
+        board[3] = ['X', 'O', 'X', 'O', 'X', 'O']
+        board[4] = ['X', '', '', '', '', '']
+        board[5] = ['', '', '', '', '', '']
+        board[6] = ['O', 'X', '', '', '', '']
+        const columnIx = Util.aiMove(board, 4, 'O')
+        expect(columnIx).toBe(2)
+    })
+
+    it('testin alphabeta', () => {
         board[0] = ['', '', '', '', '', '']
         board[1] = ['', '', '', '', '', '']
         board[2] = ['', '', '', '', '', '']
@@ -297,8 +322,21 @@ describe('util helper functions', () => {
         board[4] = ['X', 'X', '', '', '', '']
         board[5] = ['X', '', '', '', '', '']
         board[6] = ['O', '', '', '', '', '']
-
     })
+
+    it.only('testing alphabeta from real bug 3', () => {
+        board[0] = ['', '', '', '', '', '']
+        board[1] = ['', '', '', '', '', '']
+        board[2] = ['', '', '', '', '', '']
+        board[3] = ['X', 'O', 'X', 'O', 'X', 'O']
+        board[4] = ['X', '', '', '', '', '']
+        board[5] = ['', '', '', '', '', '']
+        board[6] = ['O', 'X', '', '', '', '']
+        const columnIx = Util.aiMove(board, 10, 'O')
+        expect(columnIx).toBe(2)
+    })
+
+
 
     it('testing sortListByMiddle', () => {
         expect(Util.sortListByMiddle([0, 1, 2, 3, 4, 5, 6])).toEqual([3, 4, 2, 5, 1, 6, 0])

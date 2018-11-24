@@ -13,6 +13,20 @@ class Util {
         console.log(dump)
     }
 
+    public static stringifyBoard(board:string[][], numRows:number, numCols:number) {
+        //console.log(`dumpBoard(${board})`)
+        let str:string = ''
+        for (let rowIx = 0; rowIx < numRows; rowIx++) {
+            for(let colIx = 0; colIx < numCols; colIx++) {
+                str += (board[colIx][rowIx] === '') ? '.' : board[colIx][rowIx]            
+                if (colIx === numCols-1) {
+                    str += '\n'
+                }
+            }
+        }
+        return str
+    }
+
     public static checkForWinner(board:string[][]) {
 //        console.log('checkForWinner()')
         const columnWinner =  Util.checkColumnsForWinner(board)
@@ -511,6 +525,19 @@ class Util {
     }
 
     // return array of column index for next move given the board
+    public static nextMovesReverse(board:string[][]) {
+        const columnIxs = []
+
+        for (let ix = 6; ix >= 0; ix--) {
+            if (board[ix].indexOf('') > -1) {
+                columnIxs.push(ix)
+            }
+        }
+
+        return columnIxs
+    }
+
+    // return array of column index for next move given the board
     public static nextMovesCenterFirst(board:string[][]) {
         const columnIxs = []
 
@@ -747,28 +774,40 @@ class Util {
 
     public static alphabeta(board:string[][], depth:number, alpha:number, beta:number,
                             isMaximizingPlayer:Boolean, maximizerId: string, evalFn:any,
-                            nextMovesFn:any, copyBoard:boolean, memo:object, stats:any) {
+                            nextMovesFn:any, copyBoard:boolean, memo:Map<string, number>, stats:any) {
         // console.log(`alphabeta(depth:${depth}, alpha:${alpha}, beta:${beta}, isMax:${isMaximizingPlayer}, maxId:${maximizerId})`)
         // console.log(board)
-        let value = 0
+        let value:any = 0
 
-        const key = JSON.stringify(board) + depth
-        const val = memo[key]
-        if(val !== undefined) {
-            value = val
+        stats.numAlphaBetaCalled++
+        const key = Util.stringifyBoard(board, 6, 7) +  ':' + depth + ':' + alpha
+        if (memo.has(key) === true) {
+            value = memo.get(key)
             stats.hitCount++
         }
-        else {
+        else
+        {
             if(depth == 0 || Util.isGameOver(board)) {
-                value = evalFn(board, maximizerId)
-                // console.log('evaluation value:' + value)
-                if(value == 10000) {
-                    value += depth
-                } else if(value == -10000) {
-                    value -= depth
-                }
-                if (stats !== null) {
-                    stats.numEvals++
+                // const key = Util.stringifyBoard(board, 6, 7) +  ':' + depth
+                // if (memo.has(key) === true) {
+                //     value = memo.get(key)
+                //     stats.hitCount++
+                // }
+                // else
+                {
+                    value = evalFn(board, maximizerId)
+                    // console.log('evaluation value:' + value)
+                    if(value == 10000) {
+                        value += depth
+                    } else if(value == -10000) {
+                        value -= depth
+                    }
+                    
+                    if (stats !== null) {
+                        stats.numEvals++
+                    }
+
+                    // memo.set(key, value)
                 }
             }
             else {
@@ -842,8 +881,8 @@ class Util {
                 }
             }   
         }
-        if(val !== value) {
-            memo[key] = value
+        if (memo.has(key) === false) {
+            memo.set(key, value)
         }
         return value
     }
@@ -854,10 +893,11 @@ class Util {
         let columnIx = -1
         let alpha = -Infinity
         let beta = Infinity
-        const memo = {}
+        const memo = new Map()
         const stats = {
             numEvals: 0,
-            hitCount: 0
+            hitCount: 0,
+            numAlphaBetaCalled: 0,
         }
 
         const nextMoves = nextMovesFn(board)
@@ -865,10 +905,6 @@ class Util {
         let progress = 0
         for(let move of nextMoves) {
 
-            // const progressBar:HTMLProgressElement|null = document.querySelector('.aiprogress')
-            // if (progressBar) {
-            //     progressBar.value += 100/(nextMoves.length)
-            // }
             progress += 100/nextMoves.length
             postMessage({progress:progress})
 
@@ -884,7 +920,7 @@ class Util {
             // Util.dumpBoard(boardToWorkOn, 6, 7)
             
             const returnValue = Util.alphabeta(boardToWorkOn, depth-1, alpha, beta, false, aiToken, evalFn, nextMovesFn, copyBoard, memo, stats)
-            // console.log('returnValue:' + returnValue + ' value:' + value)
+            console.log('returnValue:' + returnValue + ' value:' + value)
 
 
             if (copyBoard === false) {
@@ -893,6 +929,7 @@ class Util {
 
             // console.log('111 loop inside alphabetaSearch')
             // Util.dumpBoard(boardToWorkOn, 6, 7)
+            
 
             if(returnValue > value) {
                 value = returnValue
@@ -910,8 +947,9 @@ class Util {
         }
         // console.log('2 columnIx:' + columnIx)
 //        const [, moveToReturn] = Util.alphabeta(board, depth, -Infinity, Infinity, true, aiToken)
-        // console.log('numEvals:' + stats.numEvals)
-        // console.log('hitCount:' + stats.hitCount)
+        console.log('numAlphaBetaCalled:' + stats.numAlphaBetaCalled)
+        console.log('numEvals:' + stats.numEvals)
+        console.log('hitCount:' + stats.hitCount)
         return columnIx
     }
 
@@ -922,6 +960,8 @@ class Util {
         // return Util.minimax_search(board, 5, aiToken)
         // console.log('aiDepth:' + depth)
         return Util.alphabetaSearch(board, depth, aiToken, Util.evaluateBoardFor, Util.nextMovesCenterFirst, false)
+        // return Util.alphabetaSearch(board, depth, aiToken, Util.evaluateBoardFor, Util.nextMoves, true)
+        // return Util.alphabetaSearch(board, depth, aiToken, Util.evaluateBoardFor, Util.nextMovesReverse, true)
     }
 }
 

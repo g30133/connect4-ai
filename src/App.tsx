@@ -191,12 +191,11 @@ class App extends React.Component<any, AppState> {
         />
         
         <select className='depthselect'>
-          <option value='expert'>expert</option>
-          <option value='hard'>hard</option>
-          <option value='easy'>easy</option>
-          <option value='noob'>noob</option>
           <option value='beginner'>beginner</option>
-
+          <option value='noob'>noob</option>
+          <option value='easy'>easy</option>
+          <option value='hard'>hard</option>
+          <option value='expert'>expert</option>
         </select>
 
         <Message
