@@ -33,7 +33,7 @@ class App extends React.Component<any, AppState> {
         ['','','','','','']],
       xTurn: true,
       winner: '',
-      progress: 0
+      progress: 0,
     }
 
     this.initWorker()
@@ -71,7 +71,7 @@ class App extends React.Component<any, AppState> {
           return {
             board: newBoard,
             xTurn: true,
-            winner: winner
+            winner: winner,
           }
         })
       }
@@ -120,7 +120,7 @@ class App extends React.Component<any, AppState> {
 
       return {
         board: newBoard,
-        xTurn: false
+        xTurn: false,
       }
     },
     () => {
@@ -141,13 +141,11 @@ class App extends React.Component<any, AppState> {
             if (depthSelect) {
               // console.log(depthSelect)
               const difficulty = depthSelect.options[depthSelect.selectedIndex].text
-              if(difficulty == 'expert') {
-                aiDepth = 10
-              } else if(difficulty == 'hard') {
+              if(difficulty == 'uneasy') {
                 aiDepth = 8
               } else if(difficulty == 'easy') {
                 aiDepth = 6
-              } else if(difficulty == 'noob') {
+              } else if(difficulty == 'veryeasy') {
                 aiDepth = 4
               } else if(difficulty == 'beginner') {
                 aiDepth = 2
@@ -181,7 +179,6 @@ class App extends React.Component<any, AppState> {
     // Util.dumpBoard(this.state.board, 6, 7)
     return (
       <div className="app">
-        <label className='aititle'>Ai Thinking...</label>
         <progress className='aiprogress'
                   max="100" value={this.state.progress}>
         </progress>
@@ -192,9 +189,9 @@ class App extends React.Component<any, AppState> {
         
         <select className='depthselect'>
           <option value='beginner'>beginner</option>
-          <option value='noob'>noob</option>
+          <option value='veryeasy'>very easy</option>
           <option value='easy'>easy</option>
-          <option value='hard'>hard</option>
+          <option value='uneasy'>uneasy</option>
         </select>
 
         <Message
