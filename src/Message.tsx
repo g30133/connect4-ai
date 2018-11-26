@@ -16,7 +16,7 @@ class Message extends React.Component<MessageProps> {
         }
 
         if(this.props.winner === 'tie') {
-            message = 'its a tie game'
+            message = 'Tie Game'
         } else if(this.props.winner !== '') {
             message = this.props.winner + ' is the winner'
         }

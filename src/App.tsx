@@ -195,7 +195,6 @@ class App extends React.Component<any, AppState> {
           <option value='noob'>noob</option>
           <option value='easy'>easy</option>
           <option value='hard'>hard</option>
-          <option value='expert'>expert</option>
         </select>
 
         <Message
